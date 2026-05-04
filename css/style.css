@@ -117,6 +117,26 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.proxy-row {
+  gap: 8px;
+}
+
+.proxy-row input[type="text"] {
+  font-family: "Consolas", "Monaco", monospace;
+  font-size: 13px;
+}
+
+#btn-save-proxy {
+  background: #6c757d;
+  color: #fff;
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+#btn-save-proxy:hover {
+  background: #5a6268;
+}
+
 .indicators {
   gap: 16px;
 }

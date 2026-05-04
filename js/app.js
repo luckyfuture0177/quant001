@@ -1,4 +1,4 @@
-import { fetchKlines } from './data.js';
+import { fetchKlines, setProxyUrl, getProxyUrl } from './data.js';
 import { addIndicators } from './indicators.js';
 import { backtest } from './backtest.js';
 import { initChart, renderChart, resizeChart } from './charts.js';
@@ -17,6 +17,9 @@ const els = {
   indChecks: document.querySelectorAll('.ind-check'),
   status: document.getElementById('status'),
   corsBanner: document.getElementById('cors-banner'),
+  proxyUrl: document.getElementById('proxy-url'),
+  btnSaveProxy: document.getElementById('btn-save-proxy'),
+  proxyStatus: document.getElementById('proxy-status'),
   statsPanel: document.getElementById('stats-panel'),
   statTotal: document.getElementById('stat-total'),
   statAnnual: document.getElementById('stat-annual'),
@@ -28,6 +31,14 @@ const els = {
   syntaxToggle: document.getElementById('syntax-toggle'),
   syntaxContent: document.getElementById('syntax-content'),
 };
+
+// Load proxy URL from localStorage
+const savedProxy = localStorage.getItem('backtest_proxy_url') || '';
+if (savedProxy) {
+  els.proxyUrl.value = savedProxy;
+  setProxyUrl(savedProxy);
+  els.proxyStatus.textContent = '已启用代理';
+}
 
 function setStatus(msg) {
   els.status.textContent = msg;
@@ -174,6 +185,21 @@ function handleRun() {
 els.syntaxToggle.addEventListener('click', () => {
   els.syntaxContent.classList.toggle('open');
   els.syntaxToggle.classList.toggle('open');
+});
+
+// Proxy URL save handler
+els.btnSaveProxy.addEventListener('click', () => {
+  const url = els.proxyUrl.value.trim();
+  if (url) {
+    setProxyUrl(url);
+    localStorage.setItem('backtest_proxy_url', url);
+    els.proxyStatus.textContent = '已保存并启用代理';
+    hideCorsError();
+  } else {
+    setProxyUrl('');
+    localStorage.removeItem('backtest_proxy_url');
+    els.proxyStatus.textContent = '已清除代理设置';
+  }
 });
 
 // Event bindings
