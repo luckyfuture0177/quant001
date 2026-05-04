@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>量化策略回测系统</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>量化策略回测系统</h1>
+  </header>
+
+  <div id="cors-banner" class="hidden"></div>
+
+  <section id="controls">
+    <div class="control-row">
+      <label>股票代码: <input type="text" id="stock-code" value="600089" placeholder="如 600089 或 159326" style="width:120px;"></label>
+      <label>开始日期: <input type="date" id="start-date" value="2021-01-01"></label>
+      <label>结束日期: <input type="date" id="end-date" value="2024-09-24"></label>
+      <label>复权:
+        <select id="fqt">
+          <option value="1" selected>前复权</option>
+          <option value="0">不复权</option>
+          <option value="2">后复权</option>
+        </select>
+      </label>
+      <button id="btn-fetch">获取数据</button>
+      <span id="status"></span>
+    </div>
+    <div class="control-row">
+      <label>买入策略: <input type="text" id="buy-expr" class="expr-input" value="K &gt; D and J &gt; 0 and close &gt; MA20 and MA5 &gt; MA10 and close &gt; MA60" placeholder="输入买入条件表达式"></label>
+      <label>卖出策略: <input type="text" id="sell-expr" class="expr-input" value="K &lt; D or close &lt; MA10 or DIF &lt; DEA" placeholder="输入卖出条件表达式"></label>
+      <button id="btn-run" disabled>运行回测</button>
+    </div>
+    <div class="control-row indicators">
+      <span>指标:</span>
+      <label><input type="checkbox" class="ind-check" value="MA" checked>MA</label>
+      <label><input type="checkbox" class="ind-check" value="EMA">EMA</label>
+      <label><input type="checkbox" class="ind-check" value="MACD" checked>MACD</label>
+      <label><input type="checkbox" class="ind-check" value="RSI">RSI</label>
+      <label><input type="checkbox" class="ind-check" value="KDJ" checked>KDJ</label>
+      <label><input type="checkbox" class="ind-check" value="BOLL">BOLL</label>
+      <label><input type="checkbox" class="ind-check" value="ATR">ATR</label>
+      <label><input type="checkbox" class="ind-check" value="VOLMA" checked>VOLMA</label>
+    </div>
+  </section>
+
+  <section id="stats-panel" class="hidden">
+    <div class="stat-card"><span>总收益率</span><b id="stat-total">--</b></div>
+    <div class="stat-card"><span>年化收益</span><b id="stat-annual">--</b></div>
+    <div class="stat-card"><span>最大回撤</span><b id="stat-mdd">--</b></div>
+    <div class="stat-card"><span>交易次数</span><b id="stat-trades">--</b></div>
+    <div class="stat-card"><span>胜率</span><b id="stat-win">--</b></div>
+    <div class="stat-card"><span>盈亏比</span><b id="stat-pl">--</b></div>
+  </section>
+
+  <section id="chart-container">
+    <div id="main-chart"></div>
+  </section>
+
+  <section id="trades-panel">
+    <h3>交易记录</h3>
+    <table id="trades-table">
+      <thead>
+        <tr>
+          <th>序号</th>
+          <th>买入日期</th>
+          <th>买入价</th>
+          <th>卖出日期</th>
+          <th>卖出价</th>
+          <th>收益率</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="syntax-reference">
+    <h3 id="syntax-toggle">策略表达式语法参考</h3>
+    <div id="syntax-content">
+      <h4>基础变量（无需指标）</h4>
+      <table>
+        <tr><th>中文别名</th><th>英文变量</th></tr>
+        <tr><td>收盘价</td><td>close</td></tr>
+        <tr><td>开盘价</td><td>open</td></tr>
+        <tr><td>最高价</td><td>high</td></tr>
+        <tr><td>最低价</td><td>low</td></tr>
+        <tr><td>成交量</td><td>vol</td></tr>
+        <tr><td>成交额</td><td>turnover</td></tr>
+        <tr><td>振幅</td><td>amplitude</td></tr>
+        <tr><td>涨跌幅</td><td>change_percent</td></tr>
+        <tr><td>涨跌额</td><td>change_amount</td></tr>
+        <tr><td>换手率</td><td>turnover_rate</td></tr>
+      </table>
+
+      <h4>技术指标变量（需先勾选对应指标）</h4>
+      <table>
+        <tr><th>指标</th><th>可用变量</th></tr>
+        <tr><td>MA</td><td>MA5, MA10, MA20, MA60</td></tr>
+        <tr><td>EMA</td><td>EMA12, EMA26</td></tr>
+        <tr><td>MACD</td><td>DIF, DEA, MACD</td></tr>
+        <tr><td>RSI</td><td>RSI6, RSI12, RSI24</td></tr>
+        <tr><td>KDJ</td><td>K, D, J</td></tr>
+        <tr><td>BOLL</td><td>UP, MB, DN</td></tr>
+        <tr><td>ATR</td><td>ATR14</td></tr>
+        <tr><td>VOLMA</td><td>VolMA5, VolMA10, VolMA15, VolMA20</td></tr>
+      </table>
+
+      <h4>运算符</h4>
+      <p><code>+</code> <code>-</code> <code>*</code> <code>/</code> <code>&gt;</code> <code>&lt;</code> <code>&gt;=</code> <code>&lt;=</code> <code>==</code> <code>!=</code> <code>and</code> <code>or</code> <code>not</code> <code>(</code> <code>)</code></p>
+
+      <h4>常用策略模板</h4>
+      <div class="example">
+        <div class="example-title">双均线金叉/死叉</div>
+        <code>buy: MA5 &gt; MA10 and MA5 &gt; MA20</code><br>
+        <code>sell: MA5 &lt; MA10</code>
+      </div>
+      <div class="example">
+        <div class="example-title">MACD 金叉</div>
+        <code>buy: DIF &gt; DEA and MACD &gt; 0</code><br>
+        <code>sell: DIF &lt; DEA</code>
+      </div>
+      <div class="example">
+        <div class="example-title">RSI 超买超卖</div>
+        <code>buy: RSI6 &lt; 30</code><br>
+        <code>sell: RSI6 &gt; 70</code>
+      </div>
+      <div class="example">
+        <div class="example-title">布林带突破</div>
+        <code>buy: close &gt; UP</code><br>
+        <code>sell: close &lt; DN</code>
+      </div>
+      <div class="example">
+        <div class="example-title">量价配合</div>
+        <code>buy: close &gt; MA5 and vol &gt; VolMA5 * 1.5</code><br>
+        <code>sell: close &lt; MA5 or vol &lt; VolMA10</code>
+      </div>
+      <div class="example">
+        <div class="example-title">KDJ 金叉</div>
+        <code>buy: K &gt; D and J &lt; 20</code><br>
+        <code>sell: K &lt; D and J &gt; 80</code>
+      </div>
+      <div class="example">
+        <div class="example-title">多指标组合</div>
+        <code>buy: MA5 &gt; MA10 and close &gt; MA20 and MACD &gt; 0 and RSI6 &lt; 70</code><br>
+        <code>sell: close &lt; MA5 or MACD &lt; 0 or RSI6 &gt; 80</code>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

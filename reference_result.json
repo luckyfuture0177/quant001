@@ -1,0 +1,262 @@
+{
+  "total_return": 0.7826048693479388,
+  "annual_return": 0.17485530721657394,
+  "max_drawdown": -0.3187541478612119,
+  "trade_count": 36,
+  "win_rate": 0.3888888888888889,
+  "profit_loss_ratio": 3.9558103264289826,
+  "trades": [
+    {
+      "entry_date": "2021-04-28",
+      "exit_date": "2021-05-06",
+      "entry_price": 7.43,
+      "exit_price": 7.57,
+      "return": 0.0182
+    },
+    {
+      "entry_date": "2021-06-25",
+      "exit_date": "2021-07-07",
+      "entry_price": 7.79,
+      "exit_price": 8.13,
+      "return": 0.043
+    },
+    {
+      "entry_date": "2021-07-09",
+      "exit_date": "2021-07-22",
+      "entry_price": 8.47,
+      "exit_price": 10.24,
+      "return": 0.2084
+    },
+    {
+      "entry_date": "2021-08-04",
+      "exit_date": "2021-08-16",
+      "entry_price": 10.73,
+      "exit_price": 10.81,
+      "return": 0.0069
+    },
+    {
+      "entry_date": "2021-08-24",
+      "exit_date": "2021-09-08",
+      "entry_price": 11.49,
+      "exit_price": 19.53,
+      "return": 0.6991
+    },
+    {
+      "entry_date": "2021-10-20",
+      "exit_date": "2021-10-21",
+      "entry_price": 17.08,
+      "exit_price": 16.93,
+      "return": -0.0094
+    },
+    {
+      "entry_date": "2021-10-22",
+      "exit_date": "2021-11-01",
+      "entry_price": 16.7,
+      "exit_price": 17.8,
+      "return": 0.0653
+    },
+    {
+      "entry_date": "2021-12-15",
+      "exit_date": "2021-12-17",
+      "entry_price": 16.64,
+      "exit_price": 16.31,
+      "return": -0.0204
+    },
+    {
+      "entry_date": "2022-03-14",
+      "exit_date": "2022-03-15",
+      "entry_price": 14.23,
+      "exit_price": 13.46,
+      "return": -0.0547
+    },
+    {
+      "entry_date": "2022-03-16",
+      "exit_date": "2022-03-22",
+      "entry_price": 14.28,
+      "exit_price": 13.77,
+      "return": -0.0363
+    },
+    {
+      "entry_date": "2022-04-01",
+      "exit_date": "2022-04-06",
+      "entry_price": 14.11,
+      "exit_price": 13.72,
+      "return": -0.0282
+    },
+    {
+      "entry_date": "2022-04-19",
+      "exit_date": "2022-04-20",
+      "entry_price": 13.74,
+      "exit_price": 13.41,
+      "return": -0.0246
+    },
+    {
+      "entry_date": "2022-05-13",
+      "exit_date": "2022-05-24",
+      "entry_price": 13.7,
+      "exit_price": 14.36,
+      "return": 0.0476
+    },
+    {
+      "entry_date": "2022-05-31",
+      "exit_date": "2022-06-07",
+      "entry_price": 15.55,
+      "exit_price": 16.28,
+      "return": 0.0463
+    },
+    {
+      "entry_date": "2022-06-08",
+      "exit_date": "2022-06-15",
+      "entry_price": 16.65,
+      "exit_price": 19.1,
+      "return": 0.1465
+    },
+    {
+      "entry_date": "2022-06-30",
+      "exit_date": "2022-07-01",
+      "entry_price": 19.76,
+      "exit_price": 19.97,
+      "return": 0.01
+    },
+    {
+      "entry_date": "2022-07-04",
+      "exit_date": "2022-07-08",
+      "entry_price": 21.2,
+      "exit_price": 20.56,
+      "return": -0.0308
+    },
+    {
+      "entry_date": "2022-08-16",
+      "exit_date": "2022-08-23",
+      "entry_price": 18.38,
+      "exit_price": 18.42,
+      "return": 0.0016
+    },
+    {
+      "entry_date": "2022-08-29",
+      "exit_date": "2022-08-31",
+      "entry_price": 19.45,
+      "exit_price": 17.75,
+      "return": -0.088
+    },
+    {
+      "entry_date": "2023-01-20",
+      "exit_date": "2023-02-03",
+      "entry_price": 15.03,
+      "exit_price": 14.93,
+      "return": -0.0073
+    },
+    {
+      "entry_date": "2023-02-23",
+      "exit_date": "2023-03-02",
+      "entry_price": 15.3,
+      "exit_price": 15.09,
+      "return": -0.0143
+    },
+    {
+      "entry_date": "2023-03-06",
+      "exit_date": "2023-03-07",
+      "entry_price": 15.69,
+      "exit_price": 15.32,
+      "return": -0.0242
+    },
+    {
+      "entry_date": "2023-03-15",
+      "exit_date": "2023-03-21",
+      "entry_price": 15.98,
+      "exit_price": 15.5,
+      "return": -0.0306
+    },
+    {
+      "entry_date": "2023-03-31",
+      "exit_date": "2023-04-03",
+      "entry_price": 15.39,
+      "exit_price": 15.4,
+      "return": 0.0
+    },
+    {
+      "entry_date": "2023-04-17",
+      "exit_date": "2023-04-25",
+      "entry_price": 15.6,
+      "exit_price": 15.43,
+      "return": -0.0115
+    },
+    {
+      "entry_date": "2023-05-05",
+      "exit_date": "2023-05-12",
+      "entry_price": 16.33,
+      "exit_price": 16.37,
+      "return": 0.0018
+    },
+    {
+      "entry_date": "2023-07-12",
+      "exit_date": "2023-07-19",
+      "entry_price": 16.3,
+      "exit_price": 15.96,
+      "return": -0.0215
+    },
+    {
+      "entry_date": "2023-08-03",
+      "exit_date": "2023-08-08",
+      "entry_price": 16.18,
+      "exit_price": 15.89,
+      "return": -0.0185
+    },
+    {
+      "entry_date": "2024-01-03",
+      "exit_date": "2024-01-11",
+      "entry_price": 13.58,
+      "exit_price": 13.64,
+      "return": 0.0038
+    },
+    {
+      "entry_date": "2024-01-16",
+      "exit_date": "2024-01-17",
+      "entry_price": 14.05,
+      "exit_price": 13.78,
+      "return": -0.0198
+    },
+    {
+      "entry_date": "2024-01-18",
+      "exit_date": "2024-01-19",
+      "entry_price": 14.07,
+      "exit_price": 13.85,
+      "return": -0.0162
+    },
+    {
+      "entry_date": "2024-01-29",
+      "exit_date": "2024-01-30",
+      "entry_price": 13.92,
+      "exit_price": 13.79,
+      "return": -0.0099
+    },
+    {
+      "entry_date": "2024-02-19",
+      "exit_date": "2024-02-26",
+      "entry_price": 14.4,
+      "exit_price": 14.33,
+      "return": -0.0055
+    },
+    {
+      "entry_date": "2024-03-04",
+      "exit_date": "2024-03-13",
+      "entry_price": 15.29,
+      "exit_price": 15.54,
+      "return": 0.0158
+    },
+    {
+      "entry_date": "2024-05-13",
+      "exit_date": "2024-05-15",
+      "entry_price": 14.52,
+      "exit_price": 14.21,
+      "return": -0.0219
+    },
+    {
+      "entry_date": "2024-05-29",
+      "exit_date": "2024-06-03",
+      "entry_price": 14.67,
+      "exit_price": 14.26,
+      "return": -0.0285
+    }
+  ]
+}
