@@ -1,4 +1,4 @@
-const BASE_URL = 'http://push2his.eastmoney.com/api/qt/stock/kline/get';
+const BASE_URL = 'https://push2his.eastmoney.com/api/qt/stock/kline/get';
 const FIELDS = 'f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f116';
 
 let PROXY_URL = '';
