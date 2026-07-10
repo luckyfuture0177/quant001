@@ -12,6 +12,7 @@ const els = {
   fqt: document.getElementById('fqt'),
   btnFetch: document.getElementById('btn-fetch'),
   btnRun: document.getElementById('btn-run'),
+  btnHistory: document.getElementById('btn-history'),
   buyExpr: document.getElementById('buy-expr'),
   sellExpr: document.getElementById('sell-expr'),
   indChecks: document.querySelectorAll('.ind-check'),
@@ -30,6 +31,11 @@ const els = {
   tradesTbody: document.querySelector('#trades-table tbody'),
   syntaxToggle: document.getElementById('syntax-toggle'),
   syntaxContent: document.getElementById('syntax-content'),
+  historyModal: document.getElementById('history-modal'),
+  historyList: document.getElementById('history-list'),
+  historyEmpty: document.getElementById('history-empty'),
+  btnCloseHistory: document.getElementById('btn-close-history'),
+  btnClearHistory: document.getElementById('btn-clear-history'),
 };
 
 // Load proxy URL from localStorage
@@ -65,6 +71,135 @@ function fmtPct(v) {
 function fmtRatio(v) {
   if (!isFinite(v)) return '∞';
   return v.toFixed(2);
+}
+
+const HISTORY_KEY = 'backtest_history';
+const MAX_HISTORY = 50;
+
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(history) {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function addHistoryRecord(stockCode, buyExpr, sellExpr) {
+  if (!stockCode || !buyExpr || !sellExpr) return;
+  const history = loadHistory();
+  // 去重：相同代码+策略移到最前并更新时间
+  const existingIndex = history.findIndex(
+    h => h.stockCode === stockCode && h.buyExpr === buyExpr && h.sellExpr === sellExpr
+  );
+  if (existingIndex >= 0) {
+    history.splice(existingIndex, 1);
+  }
+  history.unshift({
+    stockCode,
+    buyExpr,
+    sellExpr,
+    timestamp: Date.now(),
+  });
+  if (history.length > MAX_HISTORY) {
+    history.length = MAX_HISTORY;
+  }
+  saveHistory(history);
+}
+
+function deleteHistoryRecord(index) {
+  const history = loadHistory();
+  history.splice(index, 1);
+  saveHistory(history);
+  renderHistory();
+}
+
+function clearHistory() {
+  if (!confirm('确定要清空全部历史记录吗？')) return;
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+}
+
+function applyHistoryRecord(record) {
+  els.stockCode.value = record.stockCode;
+  els.buyExpr.value = record.buyExpr;
+  els.sellExpr.value = record.sellExpr;
+  hideHistoryModal();
+  // 触发一次数据获取准备
+  if (record.stockCode) {
+    els.btnRun.disabled = true;
+  }
+}
+
+function formatTime(timestamp) {
+  const d = new Date(timestamp);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function renderHistory() {
+  const history = loadHistory();
+  els.historyList.innerHTML = '';
+  if (history.length === 0) {
+    els.historyEmpty.classList.remove('hidden');
+    els.btnClearHistory.disabled = true;
+    return;
+  }
+  els.historyEmpty.classList.add('hidden');
+  els.btnClearHistory.disabled = false;
+
+  history.forEach((item, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="history-info">
+        <div class="history-code">${escapeHtml(item.stockCode)}</div>
+        <div class="history-expr">买: ${escapeHtml(item.buyExpr)}</div>
+        <div class="history-expr">卖: ${escapeHtml(item.sellExpr)}</div>
+        <div class="history-time">${formatTime(item.timestamp)}</div>
+      </div>
+      <div class="history-actions">
+        <button class="btn-apply" data-index="${index}" type="button">应用</button>
+        <button class="btn-delete" data-index="${index}" type="button">删除</button>
+      </div>
+    `;
+    els.historyList.appendChild(li);
+  });
+
+  // 绑定应用/删除按钮
+  els.historyList.querySelectorAll('.btn-apply').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.index, 10);
+      applyHistoryRecord(loadHistory()[idx]);
+    });
+  });
+  els.historyList.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.index, 10);
+      deleteHistoryRecord(idx);
+    });
+  });
+}
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function showHistoryModal() {
+  renderHistory();
+  els.historyModal.classList.remove('hidden');
+}
+
+function hideHistoryModal() {
+  els.historyModal.classList.add('hidden');
 }
 
 async function handleFetch() {
@@ -144,6 +279,9 @@ function handleRun() {
     return;
   }
 
+  // 保存到历史记录
+  addHistoryRecord(els.stockCode.value.trim(), buyExpr, sellExpr);
+
   // Update stats
   els.statsPanel.classList.remove('hidden');
   els.statTotal.textContent = fmtPct(result.total_return);
@@ -205,6 +343,12 @@ els.btnSaveProxy.addEventListener('click', () => {
 // Event bindings
 els.btnFetch.addEventListener('click', handleFetch);
 els.btnRun.addEventListener('click', handleRun);
+els.btnHistory.addEventListener('click', showHistoryModal);
+els.btnCloseHistory.addEventListener('click', hideHistoryModal);
+els.btnClearHistory.addEventListener('click', clearHistory);
+
+// 点击遮罩关闭弹窗
+els.historyModal.querySelector('.modal-overlay').addEventListener('click', hideHistoryModal);
 
 // Enter key on inputs
 els.stockCode.addEventListener('keypress', (e) => {

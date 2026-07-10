@@ -40,6 +40,7 @@
       <label>买入策略: <input type="text" id="buy-expr" class="expr-input" value="K &gt; D and J &gt; 0 and close &gt; MA20 and MA5 &gt; MA10 and close &gt; MA60" placeholder="输入买入条件表达式"></label>
       <label>卖出策略: <input type="text" id="sell-expr" class="expr-input" value="K &lt; D or close &lt; MA10 or DIF &lt; DEA" placeholder="输入卖出条件表达式"></label>
       <button id="btn-run" disabled>运行回测</button>
+      <button id="btn-history" type="button">历史记录</button>
     </div>
     <div class="control-row indicators">
       <span>指标:</span>
@@ -89,17 +90,19 @@
     <div id="syntax-content">
       <h4>基础变量（无需指标）</h4>
       <table>
-        <tr><th>中文别名</th><th>英文变量</th></tr>
-        <tr><td>收盘价</td><td>close</td></tr>
-        <tr><td>开盘价</td><td>open</td></tr>
-        <tr><td>最高价</td><td>high</td></tr>
-        <tr><td>最低价</td><td>low</td></tr>
-        <tr><td>成交量</td><td>vol</td></tr>
-        <tr><td>成交额</td><td>turnover</td></tr>
-        <tr><td>振幅</td><td>amplitude</td></tr>
-        <tr><td>涨跌幅</td><td>change_percent</td></tr>
-        <tr><td>涨跌额</td><td>change_amount</td></tr>
-        <tr><td>换手率</td><td>turnover_rate</td></tr>
+        <tr><th>中文别名</th><th>英文变量</th><th>说明</th></tr>
+        <tr><td>收盘价</td><td>close</td><td>当日收盘价</td></tr>
+        <tr><td>开盘价</td><td>open</td><td>当日开盘价</td></tr>
+        <tr><td>最高价</td><td>high</td><td>当日最高价</td></tr>
+        <tr><td>最低价</td><td>low</td><td>当日最低价</td></tr>
+        <tr><td>成交量</td><td>vol</td><td>当日成交股数</td></tr>
+        <tr><td>成交额</td><td>turnover</td><td>当日成交金额</td></tr>
+        <tr><td>振幅</td><td>amplitude</td><td>当日振幅（%）</td></tr>
+        <tr><td>涨跌幅</td><td>change_percent</td><td>当日涨跌幅（%）</td></tr>
+        <tr><td>涨跌额</td><td>change_amount</td><td>当日涨跌额</td></tr>
+        <tr><td>换手率</td><td>turnover_rate</td><td>当日换手率（%）</td></tr>
+        <tr><td>买入价</td><td>buy</td><td>最近一次买入成交价（持仓期间有效）</td></tr>
+        <tr><td>卖出价</td><td>sell</td><td>最近一次卖出成交价（空仓期间有效）</td></tr>
       </table>
 
       <h4>技术指标变量（需先勾选对应指标）</h4>
@@ -150,12 +153,35 @@
         <code>sell: K &lt; D and J &gt; 80</code>
       </div>
       <div class="example">
+        <div class="example-title">止盈止损（以买入价为基准）</div>
+        <code>buy: close &gt; MA5 and close &gt; MA20</code><br>
+        <code>sell: close &lt; buy * 0.9 or close &gt; buy * 1.1</code>
+      </div>
+      <div class="example">
         <div class="example-title">多指标组合</div>
         <code>buy: MA5 &gt; MA10 and close &gt; MA20 and MACD &gt; 0 and RSI6 &lt; 70</code><br>
         <code>sell: close &lt; MA5 or MACD &lt; 0 or RSI6 &gt; 80</code>
       </div>
     </div>
   </section>
+
+  <!-- 历史记录弹窗 -->
+  <div id="history-modal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>历史记录</h3>
+        <button id="btn-close-history" class="modal-close" type="button">&times;</button>
+      </div>
+      <div class="modal-body">
+        <ul id="history-list"></ul>
+        <p id="history-empty" class="history-empty hidden">暂无历史记录</p>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-clear-history" type="button" class="btn-danger">清空全部</button>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="js/app.js"></script>
 </body>

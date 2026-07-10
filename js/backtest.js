@@ -1,44 +1,69 @@
 import { StrategyEvaluator } from './strategy.js';
 
 export function backtest(data, buyExpr, sellExpr, commission = 0.0003) {
+  // buy/sell 为动态指标，分别记录上一次买入/卖出价格
+  for (const row of data) {
+    row.buy = NaN;
+    row.sell = NaN;
+  }
+
   const evaluator = new StrategyEvaluator(data);
-  const buySignal = evaluator.evalExpression(buyExpr);
-  const sellSignal = evaluator.evalExpression(sellExpr);
 
   let position = 0;
   const positions = [];
   const trades = [];
   let entryPrice = null;
   let entryDate = null;
+  let currentBuyPrice = NaN;
+  let currentSellPrice = NaN;
 
   for (let i = 0; i < data.length; i++) {
     const row = data[i];
-    if (position === 0 && buySignal[i]) {
-      position = 1;
-      entryPrice = row.close;
-      entryDate = row.date;
-    } else if (position === 1 && sellSignal[i]) {
-      position = 0;
-      const exitPrice = row.close;
-      const ret = (exitPrice - entryPrice) / entryPrice - 2 * commission;
-      trades.push({
-        entry_date: entryDate,
-        exit_date: row.date,
-        entry_price: Math.round(entryPrice * 1000) / 1000,
-        exit_price: Math.round(exitPrice * 1000) / 1000,
-        return: Math.round(ret * 10000) / 10000,
-      });
-      entryPrice = null;
-      entryDate = null;
+    row.buy = currentBuyPrice;
+    row.sell = currentSellPrice;
+    row.buy_signal = false;
+    row.sell_signal = false;
+
+    if (position === 0) {
+      const buyFlag = evaluator.evalExpressionForRow(buyExpr, row);
+      row.buy_signal = buyFlag;
+      if (buyFlag) {
+        position = 1;
+        entryPrice = row.close;
+        entryDate = row.date;
+        currentBuyPrice = row.close;
+        currentSellPrice = NaN;
+        row.buy = currentBuyPrice;
+        row.sell = currentSellPrice;
+      }
+    } else if (position === 1) {
+      const sellFlag = evaluator.evalExpressionForRow(sellExpr, row);
+      row.sell_signal = sellFlag;
+      if (sellFlag) {
+        position = 0;
+        const exitPrice = row.close;
+        const ret = (exitPrice - entryPrice) / entryPrice - 2 * commission;
+        trades.push({
+          entry_date: entryDate,
+          exit_date: row.date,
+          entry_price: Math.round(entryPrice * 1000) / 1000,
+          exit_price: Math.round(exitPrice * 1000) / 1000,
+          return: Math.round(ret * 10000) / 10000,
+        });
+        currentSellPrice = row.close;
+        currentBuyPrice = NaN;
+        row.sell = currentSellPrice;
+        row.buy = currentBuyPrice;
+        entryPrice = null;
+        entryDate = null;
+      }
     }
     positions.push(position);
   }
 
-  // Attach computed columns
+  // Attach position column
   for (let i = 0; i < data.length; i++) {
     data[i].position = positions[i];
-    data[i].buy_signal = buySignal[i];
-    data[i].sell_signal = sellSignal[i];
   }
 
   // Daily return

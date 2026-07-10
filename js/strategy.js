@@ -9,6 +9,8 @@ const CHINESE_ALIASES = {
   '涨跌幅': 'change_percent',
   '涨跌额': 'change_amount',
   '换手率': 'turnover_rate',
+  '买入价': 'buy',
+  '卖出价': 'sell',
 };
 
 const ALLOWED_OPS = new Set([
@@ -236,5 +238,20 @@ export class StrategyEvaluator {
       if (typeof v === 'number') return v !== 0;
       return !!v;
     });
+  }
+
+  evalExpressionForRow(expr, row) {
+    if (!expr || !expr.trim()) {
+      return false;
+    }
+    const norm = normalizeExpr(expr);
+    const tokens = tokenize(norm);
+    validateTokens(tokens, this.allowedNames);
+    const parser = new Parser(tokens);
+    const ast = parser.parse();
+    const v = evaluateAST(ast, row);
+    if (Number.isNaN(v)) return false;
+    if (typeof v === 'number') return v !== 0;
+    return !!v;
   }
 }
